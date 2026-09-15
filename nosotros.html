@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nosotros — SCATTO</title>
+<meta name="description" content="La historia detrás de SCATTO: un conductor de Buenos Aires que se cansó de los soportes que se caen y decidió importar el que él mismo quería usar.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0A0A0A;
+    --off-white: #F7F5F2;
+    --red: #E10600;
+    --mid: #888;
+    --border: #E0DDD9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--off-white);
+    color: var(--black);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(247,245,242,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-cta {
+    background: var(--black);
+    color: var(--off-white);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 10px 20px;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--red); }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 80px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 48px;
+    max-width: 560px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  /* HERO */
+  .hero-about {
+    padding: 160px 80px 100px;
+    text-align: center;
+  }
+
+  .hero-about .section-label { margin-bottom: 24px; }
+
+  .hero-about .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.12;
+    margin: 0 auto 28px;
+    max-width: 780px;
+  }
+
+  .hero-about .hero-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  .hero-about p {
+    font-size: 17px;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* STORY */
+  .story {
+    background: white;
+  }
+
+  .story-inner {
+    max-width: 720px;
+  }
+
+  .story-inner .section-title { max-width: 640px; }
+
+  .story-inner p {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 24px;
+  }
+
+  .story-inner p b {
+    color: var(--black);
+    font-weight: 600;
+  }
+
+  .pull-quote {
+    border-left: 3px solid var(--red);
+    padding: 8px 0 8px 28px;
+    margin: 40px 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--black);
+  }
+
+  /* STORY STATS */
+  .story-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 56px;
+  }
+
+  .story-stat {
+    background: white;
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .story-stat .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .story-stat .stat-label {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--mid);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* HUMAN */
+  .human-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .human-lead p {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 24px;
+  }
+
+  .human-lead .section-title { margin-bottom: 28px; }
+
+  .promise {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px 28px;
+    margin-bottom: 14px;
+    background: var(--off-white);
+    transition: border-color 0.2s;
+  }
+
+  .promise:hover { border-color: var(--red); }
+
+  .promise h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .promise h3 span { color: var(--red); }
+
+  .promise p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.65;
+  }
+
+  /* CTA FINAL */
+  .cta-final {
+    background: var(--black);
+    color: var(--off-white);
+    text-align: center;
+    padding: 120px 80px;
+  }
+
+  .cta-final .section-title {
+    color: var(--off-white);
+    max-width: 700px;
+    margin: 0 auto 24px;
+  }
+
+  .cta-final .section-label { color: var(--red); text-align: center; }
+
+  .cta-final .cta-sub {
+    font-size: 16px;
+    color: #999;
+    max-width: 520px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  .btn-cta-large {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 22px 60px;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-bottom: 24px;
+  }
+  .btn-cta-large:hover { opacity: 0.88; transform: translateY(-2px); }
+
+  .micro-note {
+    font-size: 13px;
+    color: #888;
+    margin-top: 8px;
+  }
+
+  .cta-guarantees {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+  }
+
+  .cta-guarantee-item {
+    font-size: 13px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #050505;
+    color: #555;
+    padding: 32px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    section { padding: 64px 24px; }
+    .hero-about { padding: 120px 24px 64px; }
+    .story-stats { grid-template-columns: 1fr; }
+    .human-grid { grid-template-columns: 1fr; gap: 40px; }
+    .cta-final { padding: 80px 24px; }
+    .cta-guarantees { flex-wrap: wrap; gap: 16px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+    nav { padding: 0 16px; }
+    .pull-quote { font-size: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-logo-s { display: none; }
+    nav { justify-content: space-between; }
+    .nav-lockup { height: 56px !important; }
+    .nav-cta { font-size: 12px; padding: 8px 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo-s"><img src="img/logo_s.png" alt="SCATTO" style="height:96px; width:auto;"></a>
+  <a href="index.html"><img src="img/logo_lockup.png" alt="SCATTO" class="nav-lockup" style="height:140px; width:auto;"></a>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" class="nav-cta">Comprar ahora</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero-about">
+  <div class="section-label">Quién está detrás de SCATTO</div>
+  <h1 class="hero-title">No somos una marca que maneja.<br>Somos un conductor que <em>armó una marca.</em></h1>
+  <p>SCATTO no nació en una oficina de marketing. Nació en un auto, en las calles de Buenos Aires, después del enésimo soporte de pinza que terminó en el piso del acompañante. El que te habla probó este producto donde más duele: trabajando arriba del auto, todos los días.</p>
+</header>
+
+<!-- HISTORIA -->
+<section class="story">
+  <div class="story-inner">
+    <div class="section-label">La historia</div>
+    <h2 class="section-title">Miles de kilómetros por mes buscando un soporte <em>que no falle.</em></h2>
+    <p>Soy Juan. Manejo con apps de viajes en Buenos Aires, y si hay algo que aprendés haciendo cientos de viajes es esto: <b>el teléfono es tu herramienta de trabajo</b>. GPS, viajes, calificaciones: todo pasa por la pantalla. Un soporte que vibra, se afloja o se cae no es una molestia: es plata que se te escapa en cada semáforo.</p>
+    <p>Probé de todo. Pinzas que rayaban el teléfono. Ventosas que se despegaban con el calor del verano. Soportes "reforzados" que duraban dos semanas de calle porteña. Hasta que entendí que el problema no era encontrar el soporte correcto: era que <b>nadie lo estaba trayendo bien al país</b>.</p>
+    <div class="pull-quote">Así que hice lo que sabía hacer: lo fui a buscar yo mismo.</div>
+    <p>Acá entra la otra mitad de mi historia. Antes de manejar, pasé <b>más de diez años trabajando en comercio exterior en bancos argentinos</b>, analizando operaciones de importación todos los días. Sé leer una ficha técnica, sé auditar un proveedor, sé qué certificaciones pedir y sé cuándo una fábrica te está vendiendo humo. Usé todo eso para hacer una sola cosa: encontrar el soporte magnético que yo quería tener en mi propio auto.</p>
+    <p>Evalué fábricas, pedí muestras, las probé en mi rejilla, en mis pozos, en mis jornadas de seis, ocho horas arriba del auto. El soporte que hoy vende SCATTO —17 imanes N52, Triple Lock, rotación 360°— es el único que sobrevivió a esa prueba. No es el soporte más barato que existía. Es el que yo usaría. El que uso.</p>
+    <div class="story-stats">
+      <div class="story-stat">
+        <div class="stat-value">10+</div>
+        <div class="stat-label">Años en comercio exterior bancario antes de SCATTO</div>
+      </div>
+      <div class="story-stat">
+        <div class="stat-value">1er</div>
+        <div class="stat-label">Cliente de cada producto: yo</div>
+      </div>
+      <div class="story-stat">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Intermediarios: importación directa de fábrica</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ COMPRARLE A SCATTO -->
+<section>
+  <div class="human-grid">
+    <div class="human-lead">
+      <div class="section-label">Por qué comprarle a SCATTO</div>
+      <h2 class="section-title">Cuando escribís, <em>te respondo yo.</em></h2>
+      <p>SCATTO es un emprendimiento familiar de Santos Lugares, provincia de Buenos Aires. No hay call center, no hay respuestas automáticas, no hay "su consulta es importante para nosotros". Hay una persona que conoce el producto porque lo usa, y que sabe que del otro lado hay alguien que trabaja tan duro como él.</p>
+      <p>Eso cambia todo: cada consulta que me llega por WhatsApp la contesta alguien que puede decirte con honestidad si el soporte le va a servir a tu funda, a tu rejilla, a tu teléfono. Y si no te va a servir, también te lo digo. Prefiero perder una venta antes que un cliente.</p>
+    </div>
+    <div>
+      <div class="promise">
+        <h3><span>→</span> Probado antes de venderse</h3>
+        <p>Cada modelo que entra al catálogo pasó primero por mi auto. Si no sobrevive a mis jornadas, no llega a tu carrito.</p>
+      </div>
+      <div class="promise">
+        <h3><span>→</span> Respuesta real, rápida y honesta</h3>
+        <p>Consultas por WhatsApp respondidas en el día por quien conoce el producto de memoria, no por un bot.</p>
+      </div>
+      <div class="promise">
+        <h3><span>→</span> Cerca tuyo, literalmente</h3>
+        <p>Retiro sin cargo en Santos Lugares y Villa Devoto, envío en el día en CABA y zonas de GBA. Nos podés poner cara.</p>
+      </div>
+      <div class="promise">
+        <h3><span>→</span> 30 días para arrepentirte</h3>
+        <p>Probálo en tu auto con total tranquilidad. Si no te convence en los primeros 30 días, te devuelvo la plata sin preguntas, sin vueltas ni letra chica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="section-label">La prueba está en tu rejilla</div>
+  <h2 class="section-title">Ya conocés mi historia. Ahora escribí la tuya <em>sin soltar el volante.</em></h2>
+  <p class="cta-sub">Lo acercás y queda fijo. Donde tiene que estar. Compra protegida, hasta 12 cuotas, envío en el día en CABA.</p>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" target="_blank" class="btn-cta-large">Ver el soporte SCATTO</a>
+  <p class="micro-note">¿Dudas antes de comprar? Escribime por WhatsApp: te respondo yo.</p>
+  <div class="cta-guarantees">
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Envíos a todo el país
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      30 días de devolución
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Hasta 12 cuotas
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Pago seguro
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><img src="img/logo_dark.png" alt="SCATTO" style="height:56px; width:auto;"></div>
+  <div>© 2026 SCATTO. Todos los derechos reservados.</div>
+  <div><a href="mailto:contacto@scatto.com.ar" style="color:#555; text-decoration:none;">contacto@scatto.com.ar</a></div>
+</footer>
+
+<!-- WHATSAPP BUTTON -->
+<a href="https://wa.me/541169810916" target="_blank" style="position:fixed; bottom:24px; right:24px; z-index:999; background:#25D366; color:white; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); text-decoration:none; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+</body>
+</html>

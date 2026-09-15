@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCATTO — Soporte MagSafe para Auto</title>
+<meta name="description" content="Soporte magnético MagSafe para auto con 17 imanes N52 y Triple Lock. Sin tornillos. Sin ventosas. Sin dramas. Envíos a todo el país.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0A0A0A;
+    --off-white: #F7F5F2;
+    --red: #E10600;
+    --mid: #888;
+    --border: #E0DDD9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--off-white);
+    color: var(--black);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(247,245,242,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--red); }
+
+  .nav-cta {
+    background: var(--black);
+    color: var(--off-white);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 10px 20px;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--red); }
+
+  .nav-link {
+    color: var(--black);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--red); }
+
+  /* HERO */
+  .hero {
+    padding-top: 60px;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .hero-text {
+    padding: 80px 40px 80px 60px;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 40px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .hero-tagline {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--mid);
+    margin-bottom: 40px;
+  }
+
+  .hero-price {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .price-current {
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--black);
+  }
+
+  .price-old {
+    font-size: 18px;
+    color: var(--mid);
+    text-decoration: line-through;
+  }
+
+  .price-badge {
+    background: var(--red);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--black);
+    color: var(--off-white);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 18px 40px;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .btn-primary:hover { background: var(--red); transform: translateY(-1px); }
+
+  .hero-guarantees {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .guarantee-item {
+    font-size: 12px;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .guarantee-item svg {
+    flex-shrink: 0;
+  }
+
+  .hero-image {
+    position: relative;
+    height: 100vh;
+    background: #F7F5F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .hero-image img {
+    width: 70%;
+    max-width: 380px;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 40px 80px rgba(0,0,0,0.5));
+  }
+
+  .hero-image::before { display: none; }
+
+  /* STRIP */
+  .strip {
+    background: var(--black);
+    color: var(--off-white);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .strip-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .strip-item span { color: var(--red); font-size: 16px; }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 80px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 48px;
+    max-width: 560px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  /* FEATURES GRID */
+  .features {
+    background: white;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .feature-card {
+    background: white;
+    padding: 40px 32px;
+  }
+
+  .feature-number {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 20px;
+    color: var(--black);
+  }
+
+  .feature-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.65;
+  }
+
+  /* IMAGE SECTIONS */
+  .img-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: center;
+    padding: 0;
+  }
+
+  .img-section.reverse { direction: rtl; }
+  .img-section.reverse > * { direction: ltr; }
+
+  .img-section-text {
+    padding: 80px 80px;
+  }
+
+  .img-section-image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    max-height: 480px;
+  }
+
+  .img-section-desc {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  /* SPECS */
+  .specs {
+    background: var(--black);
+    color: var(--off-white);
+  }
+
+  .specs .section-title { color: var(--off-white); }
+  .specs .section-label { color: var(--red); }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: #222;
+    border: 1px solid #222;
+    margin-top: 0;
+  }
+
+  .spec-item {
+    background: var(--black);
+    padding: 40px 32px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .spec-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .spec-label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    font-weight: 500;
+  }
+
+  /* COMPARISON */
+  .comparison-img {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  /* COMPAT */
+  .compat-img {
+    width: 100%;
+  }
+
+  /* CTA FINAL */
+  .cta-final {
+    background: var(--black);
+    color: var(--off-white);
+    text-align: center;
+    padding: 120px 80px;
+  }
+
+  .cta-final .section-title {
+    color: var(--off-white);
+    max-width: 700px;
+    margin: 0 auto 48px;
+  }
+
+  .cta-final .section-label { color: var(--red); text-align: center; }
+
+  .cta-price-block {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .cta-price-current {
+    font-size: 48px;
+    font-weight: 600;
+  }
+
+  .cta-price-old {
+    font-size: 24px;
+    color: #666;
+    text-decoration: line-through;
+  }
+
+  .btn-cta-large {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 22px 60px;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-bottom: 24px;
+  }
+  .btn-cta-large:hover { opacity: 0.88; transform: translateY(-2px); }
+
+  .cta-guarantees {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+  }
+
+  .cta-guarantee-item {
+    font-size: 13px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #050505;
+    color: #555;
+    padding: 32px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #444;
+    letter-spacing: 0.12em;
+  }
+
+  .footer-logo span { color: var(--red); }
+
+  /* KIT SECTION */
+  .kit-section {
+    background: var(--off-white);
+  }
+
+  .kit-img {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-text { padding: 40px 24px 48px; order: 2; }
+    .hero-image { height: auto; min-height: unset; order: 1; padding: 40px 0 20px; background: #F7F5F2; }
+    .hero-image img { width: 75%; max-width: 320px; }
+    section { padding: 64px 24px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .img-section { grid-template-columns: 1fr; }
+    .img-section.reverse { direction: ltr; }
+    .img-section-text { padding: 40px 24px; }
+    .img-section-image img { max-height: unset; object-fit: contain; min-height: unset; }
+    .specs-grid { grid-template-columns: repeat(2, 1fr); }
+    .strip { gap: 20px; flex-wrap: wrap; padding: 16px 24px; }
+    .cta-final { padding: 80px 24px; }
+    .faq-section { padding: 64px 24px !important; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+    .cta-guarantees { flex-wrap: wrap; gap: 16px; }
+    nav { padding: 0 16px; }
+    .hero-title { font-size: 32px; }
+  }
+
+
+  @media (max-width: 768px) {
+    .medios-grid { grid-template-columns: 1fr !important; }
+    .medios-section-inner { grid-template-columns: 1fr !important; }
+  }
+
+
+  @media (max-width: 768px) {
+    .nav-logo-s { display: none; }
+    .btn-section-cta { padding: 0 24px 48px !important; }
+    nav { justify-content: space-between; }
+    .nav-lockup { height: 56px !important; }
+    .nav-cta { font-size: 12px; padding: 8px 14px; }
+  }
+
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo-s"><img src="img/logo_s.png" alt="SCATTO" style="height:96px; width:auto;"></a>
+  <a href="#"><img src="img/logo_lockup.png" alt="SCATTO" class="nav-lockup" style="height:140px; width:auto;"></a>
+  <div style="display:flex; align-items:center; gap:20px;">
+    <a href="nosotros.html" class="nav-link">Nosotros</a>
+    <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" class="nav-cta">Comprar ahora</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding:0;">
+  <div class="hero-text">
+    <div class="hero-eyebrow" style="font-size:16px; letter-spacing:0.2em;">Soporte Magnético para Auto</div>
+    <h1 class="hero-title">Tu celular,<br>exactamente donde<br><em>lo necesitás.</em></h1>
+    <p class="hero-sub">Sin tornillos. Sin ventosas. Sin dramas.</p>
+    <p class="hero-tagline">17 imanes N52 · Triple Lock · Rotación 360° · 30 días de devolución</p>
+    <div class="hero-price">
+      <span class="price-current">$30.000</span>
+      <span class="price-old">$35.000</span>
+      <span class="price-badge">14% OFF</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+  <span style="width:8px; height:8px; border-radius:50%; background:#E10600; display:inline-block; animation: pulse 1.5s infinite;"></span>
+  <span id="stock-counter" style="font-size:13px; font-weight:600; color:#E10600; letter-spacing:0.04em;">Últimas 10 unidades disponibles</span>
+</div>
+<a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" target="_blank" class="btn-primary" target="_blank">Comprar ahora — Envío gratis</a>
+    <div class="hero-guarantees">
+      <div class="guarantee-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Envíos a todo el país
+      </div>
+      <div class="guarantee-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        30 días de devolución
+      </div>
+      <div class="guarantee-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Pago en cuotas
+</div>
+</div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <video autoplay loop muted playsinline style="width:70%; max-width:360px; height:auto; object-fit:contain; display:block; mix-blend-mode:multiply;">
+    <source src="img/video_hero.mp4" type="video/mp4">
+  </video>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item"><span>✓</span> Instalación en segundos</div>
+  <div class="strip-item"><span>✓</span> Compatible iPhone y Android</div>
+  <div class="strip-item"><span>✓</span> No vibra en caminos irregulares</div>
+  <div class="strip-item"><span>✓</span> Stock disponible</div>
+</div>
+
+
+<div style="background:#111; padding:12px 40px; display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; border-top:1px solid #222;">
+    <img src="data:image/png;base64,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" alt="Visa" style="height:20px; width:auto; border-radius:2px; background:white; padding:2px; opacity:0.9;">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAoCAYAAAB99ePgAAAEqklEQVR4nO1WXWhcRRT+zpy5d/dusrsNTUpLNwVr/5SmWGtTSMFAAyIoVLQJFvRJBMEX+yw0hj71oVhB8AfBP4K6FYSiD32QUB9EtJWARlsqtI3ZhjZpY9Pdzd57Z+b4sLttGtJNWlQU94OBy5wz5/vumZnvXqCJJppoookm/h8QgAT9LICujl4tgLoZH4SSkV4tI6iOwV4tAvonhHGjmOQbxBvEFoO+m+Q8wATY/JEjwaNHP36Mi3PbRVxAnn8xzq0codFvfsUAMJPvvy+Jc30wcxsUyMDLjF1O7z5Bj79+TQahaAhuOXzLbrUATAR7ft32p7NT1w8nw3iDtrWgAkqeMkVKvrPiQ3/WNzde8XUcgKRGQYiNN1mh9kOZ/afekrwwDcA2oFu+uDzAA4C9sO6hF1ZNzrxn4hhlwBIg9SokpDt6rgN9FtH6LKzAzK/hsWjdmsDsXMeh7HM/HhQ5qIiGGnZwSXECKALcRFfP5uBs4SdEEcdQoupnjwROFJKbS5Ltm3G4CoQb08ptThPFDqAqhQOcgnXJVFIXObcnve/bEcn3Mw0cu2MH1Z0Ct+UQwOPTBzKR9WKQU/MvhRCIHVJbi4QQLAli71KJULbV1xKpEykRBlwsVJ56FSBg7Jg0Jm4MIsCMuBGNMNpThhMC3VpDAgFBrzDQGQMxBCiAIgd1PYZwfWNuauA4dKRctLNw/MV2GoJrZDENxdVLrt11OEXGrnAAyYKjIABUyoJYbi4gqQpc7GWtACIunSid6QAAvDZ4b+LqmN79QAylokXZgGrHFm4Q04IsAIAQABCZlNderk4N3ZG3oTgCJA9wzxtH50TzLwHIAQs9SmD/8OAqXK0mgDDBtWrAyW15AFzCJweoc1+6ZycEoEaet2Tn+gHACUxby7tKsSLILUohEAnsHKNyMQlKikgkzrYlIBmvuodENWEEQCw8pUxL7nh//4OMfGP+JcURYAVQnZM/f34lk/xiFdgDJHbVeScgBxJXPJ0xuMqk0lDx/WkDSC0OJ0LWicRBmvxSJXWq2P7UEZz7mpYy4mWZcO0S0O8HDiSS73/1UbZY2eeMRVTriYYggMbVDnup5SBVUjlaj1IMV7M5YgI8RmhaTs76j+xf9czw5HJ47+bzVbVTVnJh7bZ9qWvF58XEW8XBZ82FZEvixNlgy9sY3VXecuLTl9mWnhQbdQJkoP3fnJf97Imx7z84OUSGbtnfXwua98Cs4DMDrKpjQaaIeJ7m+avQt3Pnyq6urraF5RpyLZEjO3bsSE1PT79krdUZzytEUUTG81QMl2jVvonL5U1eKnHakVqT8KgYxrHcKJsrzNzCiDOtqRTHVmbD0HQ75z6ZmJj4AdUzf++3tY6pqams1qR8378SMW0IFbZphU1J5ocrcbyaguD8XBT3GGO3R0Y4DI2fSnidSuxGY2RbGMMPQ6NFrO7s7Azy+by/FOdy/ucEAMbHxy/39va+GQSBpNNpMzo6utrzPAsAiQSKpVKpNZttO8bMeu/evTPDw8PMzGuU0iURSeZyuclCocAile+6u7unx8bGgAZd+9fjbv/rl5tfd93F5uqu/Hfc1yaaaKKJ/xT+BLr6Dbp/6FwuAAAAAElFTkSuQmCC" alt="Mastercard" style="height:20px; width:auto; border-radius:2px; background:white; padding:2px; opacity:0.9;">
+    <img src="data:image/png;base64,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" alt="Amex" style="height:20px; width:auto; border-radius:2px; background:white; padding:2px; opacity:0.9;">
+    <img src="data:image/png;base64,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" alt="Mercado Pago" style="height:20px; width:auto; border-radius:2px; background:white; padding:2px; opacity:0.9;">
+    <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:#888;">
+      <svg width="11" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Compra protegida
+    </div>
+</div>
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-label">Por qué SCATTO</div>
+  <h2 class="section-title">Tres razones para no volver a un soporte <em>común.</em></h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-number">01</div>
+      <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>
+      </svg>
+      <div class="feature-title">17 imanes N52</div>
+      <p class="feature-desc">La categoría más potente de imanes de neodimio. Tu celular queda fijo aunque frenes fuerte o pases por un bache.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">02</div>
+      <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <div class="feature-title">Triple Lock</div>
+      <p class="feature-desc">Sistema de sujeción en tres puntos de contacto con la rejilla. No se cae, no se mueve, no hay que ajustar nada mientras manejás.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">03</div>
+      <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <div class="feature-title">30 días de devolución</div>
+      <p class="feature-desc">Si no quedás conforme en los primeros 30 días, te devolvemos el dinero. Sin preguntas, sin vueltas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IMG SECTION 1: Triple Lock -->
+<div class="img-section">
+  <div class="img-section-image">
+    <img src="img/foto4.jpg" alt="Sistema Triple Lock">
+  </div>
+  <div class="img-section-text">
+    <div class="section-label">Triple Lock</div>
+    <h2 class="section-title">Sujeción en tres puntos. <em>Permanente.</em></h2>
+    <p class="img-section-desc">El sistema de clip agarra la rejilla en tres contactos simultáneos, no en uno. Compatible con rejillas horizontales y verticales de la mayoría de los autos modernos.</p>
+    <p class="img-section-desc" style="font-size:13px; color:#888;">No funciona con rejillas circulares tipo turbina.</p>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" class="btn-primary" style="display:inline-block; margin-top:28px; max-width:340px; font-size:13px; padding:14px 28px;">Comprar ahora &mdash; $25.500</a>
+  </div>
+</div>
+
+
+<!-- IMG SECTION 2: Imanes -->
+<div class="img-section reverse">
+  <div class="img-section-image">
+    <img src="img/foto5.jpg" alt="17 imanes N52">
+  </div>
+  <div class="img-section-text">
+    <div class="section-label">17 imanes N52</div>
+    <h2 class="section-title">La fuerza magnética que <em>no cede.</em></h2>
+    <p class="img-section-desc">El grado N52 es el más potente disponible en imanes de neodimio. Con 17 dispuestos en anillo, la sujeción magnética es instantánea y firme en cualquier condición de manejo, con iPhone o Android.</p>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" class="btn-primary" style="display:inline-block; margin-top:28px; max-width:340px; font-size:13px; padding:14px 28px;">Comprar ahora &mdash; $25.500</a>
+  </div>
+</div>
+
+
+<!-- IMG SECTION 3: Comparación -->
+<div class="img-section">
+  <div class="img-section-image">
+    <img src="img/foto6_1.jpg" alt="Instalación en el auto">
+  </div>
+  <div class="img-section-text">
+    <div class="section-label">Sin ventosas</div>
+    <h2 class="section-title">El soporte de ventosa se despega. <em>Este, no.</em></h2>
+    <p class="img-section-desc">Las ventosas pierden adherencia con el calor, ensucian el parabrisas y vibran en caminos irregulares. El sistema de rejilla es permanente, discreto y no invade el tablero.</p>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" class="btn-primary" style="display:inline-block; margin-top:28px; max-width:340px; font-size:13px; padding:14px 28px;">Comprar ahora &mdash; $25.500</a>
+  </div>
+</div>
+
+
+<!-- COMPAT -->
+<section class="kit-section">
+  <div class="section-label">Compatibilidad</div>
+  <h2 class="section-title">Funciona con <em>casi todos</em> los celulares modernos.</h2>
+  <img src="img/foto7.jpg" alt="Compatibilidad universal" class="compat-img" style="max-width:480px; display:block; margin:24px auto 0; border-radius:4px;">
+</section>
+
+<!-- KIT -->
+<div class="img-section reverse" style="background:white;">
+  <div class="img-section-image">
+    <img src="img/foto_kit.jpg" alt="Kit incluido">
+  </div>
+  <div class="img-section-text">
+    <div class="section-label">Qué incluye</div>
+    <h2 class="section-title">Todo lo que necesitás <em>en una caja.</em></h2>
+    <p class="img-section-desc">Soporte magnético MagSafe, pinza Triple Lock, anillo metálico adhesivo para Android, y tarjeta de 30 días de devolución. Listo para instalar desde el primer día.</p>
+  </div>
+</div>
+
+<!-- SPECS -->
+<section class="specs">
+  <div class="section-label">Especificaciones</div>
+  <h2 class="section-title">Los números detrás <em>del producto.</em></h2>
+  <div class="specs-grid">
+    <div class="spec-item">
+      <div class="spec-value">17</div>
+      <div class="spec-label">Imanes N52 neodimio</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-value">360°</div>
+      <div class="spec-label">Rotación libre</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-value">107g</div>
+      <div class="spec-label">Peso total</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-value" style="font-size:28px;">30 días</div>
+      <div class="spec-label">Devolución</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- MEDIOS DE PAGO Y ENVÍO -->
+<section style="background:#fff; padding:80px 80px;">
+  <div class="section-label">Pagá como querés. Recibilo donde estés.</div>
+  <h2 class="section-title">Medios de pago <em>y envío.</em></h2>
+  <div class="medios-section-inner" style="display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:8px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    
+    <div>
+      <div style="font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#888; margin-bottom:20px;">Medios de pago</div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Tarjeta de crédito</div>
+            <div style="font-size:12px; color:#888;">Visa, Mastercard, Amex — hasta 24 cuotas</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><circle cx="9" cy="14" r="2"/><path d="M15 12h2"/><path d="M15 16h2"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Tarjeta de débito</div>
+            <div style="font-size:12px; color:#888;">Visa Débito, Maestro, Cabal</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Transferencia bancaria</div>
+            <div style="font-size:12px; color:#888; display:flex; align-items:center; gap:6px;"><span style="background:#E10600; color:white; font-size:10px; padding:2px 6px; border-radius:2px; font-weight:600;">10% OFF</span> Descuento pagando por transferencia</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Mercado Pago</div>
+            <div style="font-size:12px; color:#888;">Billetera virtual y cuotas sin tarjeta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#888; margin-bottom:20px;">Envíos a todo el país</div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Andreani / OCA / Correo Argentino</div>
+            <div style="font-size:12px; color:#888;">Entrega en 2 a 5 días hábiles</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Seguimiento en tiempo real</div>
+            <div style="font-size:12px; color:#888;">Te enviamos el código de seguimiento por mail</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500;">Compra protegida</div>
+            <div style="font-size:12px; color:#888;">Si no llega o no es lo que esperabas, te devolvemos el dinero</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; padding:20px 24px; border:1px solid #E0DDD9; border-radius:2px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E10600" stroke-width="1.5"><path d="M12 2v20M2 12h20"/></svg>
+          <div>
+            <div style="font-size:14px; font-weight:500; color:#E10600;">Envío gratis</div>
+            <div style="font-size:12px; color:#888;">En compras a través de MercadoLibre</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- FAQ -->
+<section style="background: var(--off-white); padding: 100px 80px;">
+  <div class="section-label">Preguntas frecuentes</div>
+  <h2 class="section-title">Todo lo que necesitás saber <em>antes de comprar.</em></h2>
+  
+  <div style="max-width: 720px;">
+    <div style="border-bottom: 1px solid var(--border); padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Funciona con mi celular Android?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">Sí. La caja incluye un anillo metálico adhesivo que pegás a tu Android (o a la funda) y le da la misma compatibilidad que un iPhone con MagSafe.</p>
+    </div>
+    <div style="border-bottom: 1px solid var(--border); padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Se cae en baches o caminos de tierra?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">No. El sistema Triple Lock combinado con los 17 imanes N52 lo hace muy estable. Está probado en uso diario en todo tipo de terreno.</p>
+    </div>
+    <div style="border-bottom: 1px solid var(--border); padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Sirve para mi auto?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">Funciona en cualquier auto con rejillas de ventilación horizontales o verticales, que es la mayoría. Si tu auto tiene rejillas circulares tipo turbina, no es compatible.</p>
+    </div>
+    <div style="border-bottom: 1px solid var(--border); padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Funciona si tengo el celular con funda?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">Sí, incluso con fundas gruesas. La fuerza de los 17 imanes N52 atraviesa la funda sin problema. No funciona con fundas tipo armadura de más de 3mm o de cuero.</p>
+    </div>
+    <div style="border-bottom: 1px solid var(--border); padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Carga el celular de forma inalámbrica?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">No. SCATTO es un soporte magnético, no un cargador. Si necesitás carga inalámbrica, tenés que sumar un cargador Qi aparte.</p>
+    </div>
+    <div style="padding: 24px 0;">
+      <p style="font-size: 16px; font-weight: 600; color: var(--black); margin: 0 0 10px 0;">¿Cuánto tarda en llegar?</p>
+      <p style="font-size: 15px; color: #555; margin: 0; line-height: 1.7;">Despachamos por Andreani, OCA y Correo Argentino. En general llega en 2 a 5 días hábiles. En todo CABA y algunas zonas de GBA ofrecemos envío gratis en el día comprando antes de las 13hs. Apenas sale el pedido te mandamos el código de seguimiento por mail.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="section-label">Precio de lanzamiento</div>
+  <h2 class="section-title">Tu celular, fijo. <em>Sin tornillos. Sin ventosas. Sin dramas.</em></h2>
+  <div class="cta-price-block">
+    <span class="cta-price-current">$25.500</span>
+    <span class="cta-price-old">$30.000</span>
+    <span class="price-badge">15% OFF</span>
+  </div>
+  <a href="https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/" target="_blank" class="btn-cta-large" target="_blank">Comprar ahora</a>
+  <div class="cta-guarantees">
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Envíos a todo el país
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      30 días de devolución
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Hasta 12 cuotas
+    </div>
+    <div class="cta-guarantee-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Pago seguro
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><img src="img/logo_dark.png" alt="SCATTO" style="height:56px; width:auto;"></div>
+  <div>© 2026 SCATTO. Todos los derechos reservados.</div>
+  <div>
+    <a href="nosotros.html" style="color:#555; text-decoration:none;">Nosotros</a>
+    <span style="margin:0 8px;">·</span>
+    <a href="mailto:contacto@scatto.com.ar" style="color:#555; text-decoration:none;">contacto@scatto.com.ar</a>
+  </div>
+</footer>
+
+
+<script>
+function comprarAhora() {
+  window.location.href = 'https://tienda.scatto.com.ar/productos/soporte-magnetico-magsafe-para-auto/';
+}
+</script>
+
+<!-- WHATSAPP BUTTON -->
+<a href="https://wa.me/541169810916" target="_blank" style="position:fixed; bottom:24px; right:24px; z-index:999; background:#25D366; color:white; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); text-decoration:none; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+</body>
+</html>

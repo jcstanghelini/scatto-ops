@@ -1,0 +1,10 @@
+# netlify.toml — va en la raíz de la carpeta "Pagina"
+
+[build]
+  functions = "netlify/functions"
+
+[functions."liberaciones"]
+  # Corre a las 8:30, 12:30, 15:30 y 23:30 hora Argentina (UTC-3)
+  # 8:30 → resumen del día · las otras → aviso de plata liberada nueva
+  # (23:30 ART = 02:30 UTC del día siguiente)
+  schedule = "30 2,11,15,18 * * *"

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SCATTO · Etiquetas QR</title>
+<link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root { --tinta:#111111; --fondo:#ffffff; --rojo:#E10600; --borde:#e4e4e4; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--fondo); color:var(--tinta); font-family:'Inter',sans-serif; padding:16px; max-width:640px; margin:0 auto; }
+  .sub { text-align:center; font-size:0.8rem; color:#777; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:20px; }
+  .card { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:16px; margin-bottom:14px; }
+  label { font-size:0.8rem; color:#777; display:block; margin-bottom:6px; }
+  input[type="password"], input[type="tel"] { width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; background:#fff; color:var(--tinta); font-size:1rem; margin-bottom:10px; }
+  input:focus { outline:2px solid var(--rojo); border-color:var(--rojo); }
+  button { width:100%; padding:14px; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; margin-bottom:8px; }
+  .btn-rojo { background:var(--rojo); color:#fff; }
+  .btn-claro { background:var(--tinta); color:#fff; }
+  .btn-borde { background:transparent; color:var(--tinta); border:1px solid #ccc; }
+  .hidden { display:none !important; }
+  .fila { display:flex; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid #efefef; }
+  .fila input[type="checkbox"] { width:20px; height:20px; accent-color:var(--rojo); }
+  .fila .num { font-weight:700; color:var(--rojo); min-width:52px; }
+  .fila .det { font-size:0.85rem; color:#444; }
+  .msg { padding:12px; border-radius:8px; font-size:0.9rem; margin-bottom:12px; background:#f2f2f2; color:#444; }
+  .msg-err { background:#fdecea; color:#c0392b; }
+  .mini { font-size:0.75rem; color:#999; text-align:center; margin-top:6px; }
+  .mini a { color:#999; }
+
+  /* ---- Zona de impresion (sin cambios) ---- */
+  #hoja { display:none; }
+  @media print {
+    body { background:#fff; color:#000; max-width:none; padding:0; }
+    body > *:not(#hoja) { display:none !important; }
+    #hoja { display:flex; flex-wrap:wrap; gap:4mm; padding:8mm; }
+    .etiqueta {
+      width: 60mm; height: 62mm;
+      border: 1px dashed #999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      page-break-inside: avoid;
+      font-family:'Inter',sans-serif;
+    }
+    .etiqueta .marca { font-family:'Playfair Display',serif; font-size:11pt; letter-spacing:0.15em; margin-bottom:2mm; }
+    .etiqueta .qr { width:38mm; height:38mm; }
+    .etiqueta .qr img, .etiqueta .qr canvas { width:38mm !important; height:38mm !important; }
+    .etiqueta .numero { font-size:14pt; font-weight:700; margin-top:2mm; }
+    .etiqueta .cliente { font-size:8pt; color:#333; max-width:54mm; text-align:center; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  }
+</style>
+</head>
+<body>
+
+<img src="/logo_lockup.png" alt="SCATTO" style="display:block;margin:22px auto 12px;height:56px;">
+<div class="sub">Etiquetas QR</div>
+
+<div id="paso-clave" class="card">
+  <label>Clave de acceso</label>
+  <input type="password" id="clave" placeholder="Ingresa tu clave" autocomplete="off">
+  <button class="btn-rojo" onclick="guardarClave()">Entrar</button>
+</div>
+
+<div id="panel" class="hidden">
+  <button class="btn-rojo" onclick="cargarPendientes()">Cargar pedidos pendientes</button>
+
+  <div class="card">
+    <label>O agregar por numero de orden</label>
+    <input type="tel" id="manual" placeholder="Ej: 131" autocomplete="off">
+    <button class="btn-borde" onclick="agregarManual()">Agregar a la lista</button>
+  </div>
+
+  <div id="lista" class="card hidden">
+    <label>Selecciona los pedidos a imprimir</label>
+    <div id="filas"></div>
+    <div style="height:10px"></div>
+    <button class="btn-claro" onclick="imprimir()">Imprimir etiquetas seleccionadas</button>
+  </div>
+
+  <div id="estado" class="hidden"></div>
+</div>
+
+<div id="hoja"></div>
+
+<div class="mini">SCATTO · uso interno · <a href="scan.html">ir al escaner</a></div>
+
+<script>
+const FN_URL = "/.netlify/functions/scan";
+let ordenes = [];
+
+function guardarClave() {
+  const c = document.getElementById("clave").value.trim();
+  if (!c) return;
+  localStorage.setItem("scatto_scan_key", c);
+  entrar();
+}
+function claveGuardada() { return localStorage.getItem("scatto_scan_key") || ""; }
+function entrar() {
+  document.getElementById("paso-clave").classList.add("hidden");
+  document.getElementById("panel").classList.remove("hidden");
+}
+
+async function llamar(payload) {
+  const res = await fetch(FN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Scan-Key": claveGuardada() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({ error: "Respuesta invalida" }));
+  if (res.status === 401) { localStorage.removeItem("scatto_scan_key"); location.reload(); return null; }
+  if (!res.ok) throw new Error(data.error || ("Error " + res.status));
+  return data;
+}
+
+function aviso(texto, esError) {
+  const e = document.getElementById("estado");
+  e.className = "msg" + (esError ? " msg-err" : "");
+  e.textContent = texto;
+  e.classList.remove("hidden");
+}
+
+async function cargarPendientes() {
+  aviso("Buscando pedidos pendientes...");
+  try {
+    const data = await llamar({ action: "pendientes" });
+    if (!data) return;
+    ordenes = data.orders;
+    pintarLista();
+    aviso(ordenes.length + " pedidos pendientes de despacho.");
+  } catch (e) { aviso(e.message, true); }
+}
+
+async function agregarManual() {
+  const v = document.getElementById("manual").value.trim();
+  if (!v) return;
+  aviso("Buscando #" + v + "...");
+  try {
+    const data = await llamar({ orderId: v, action: "info" });
+    if (!data) return;
+    const o = data.order;
+    if (!ordenes.find(x => x.id === o.id)) {
+      ordenes.push({ id: o.id, number: o.number, name: o.customer_name, city: "", payment: o.payment_status, products: o.products.length });
+    }
+    document.getElementById("manual").value = "";
+    pintarLista();
+    aviso("Agregado #" + o.number + ".");
+  } catch (e) { aviso(e.message, true); }
+}
+
+function pintarLista() {
+  const cont = document.getElementById("filas");
+  cont.innerHTML = "";
+  ordenes.forEach((o, i) => {
+    const div = document.createElement("div");
+    div.className = "fila";
+    div.innerHTML = '<input type="checkbox" id="chk' + i + '" checked>' +
+      '<span class="num">#' + o.number + '</span>' +
+      '<span class="det">' + o.name + (o.city ? " \u00b7 " + o.city : "") +
+      (o.payment && o.payment !== "paid" ? " \u00b7 pago " + o.payment : "") + '</span>';
+    cont.appendChild(div);
+  });
+  document.getElementById("lista").classList.toggle("hidden", ordenes.length === 0);
+}
+
+function imprimir() {
+  const hoja = document.getElementById("hoja");
+  hoja.innerHTML = "";
+  let n = 0;
+  ordenes.forEach((o, i) => {
+    const chk = document.getElementById("chk" + i);
+    if (!chk || !chk.checked) return;
+    n++;
+    const et = document.createElement("div");
+    et.className = "etiqueta";
+    et.innerHTML = '<div class="marca">SCATTO</div>' +
+      '<div class="qr" id="qr' + i + '"></div>' +
+      '<div class="numero">#' + o.number + '</div>' +
+      '<div class="cliente">' + o.name + '</div>';
+    hoja.appendChild(et);
+    new QRCode(document.getElementById("qr" + i), {
+      text: "https://scatto.com.ar/scan.html?o=" + o.id,
+      width: 300, height: 300,
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  });
+  if (n === 0) { aviso("No hay pedidos seleccionados.", true); return; }
+  setTimeout(() => window.print(), 400);
+}
+
+document.getElementById("clave").addEventListener("keydown", e => { if (e.key === "Enter") guardarClave(); });
+document.getElementById("manual").addEventListener("keydown", e => { if (e.key === "Enter") agregarManual(); });
+if (claveGuardada()) entrar();
+</script>
+</body>
+</html>

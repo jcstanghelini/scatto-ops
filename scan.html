@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SCATTO · Escaner de pedidos</title>
+<link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root {
+    --tinta: #111111;
+    --fondo: #ffffff;
+    --rojo: #E10600;
+    --borde: #e4e4e4;
+    --verde: #1e8a5a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--fondo);
+    color: var(--tinta);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .sub {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #777;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  label { font-size: 0.8rem; color: #777; display: block; margin-bottom: 6px; }
+  input[type="text"], input[type="password"], input[type="tel"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: var(--tinta);
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  input:focus { outline: 2px solid var(--rojo); border-color: var(--rojo); }
+  button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .btn-rojo { background: var(--rojo); color: #fff; }
+  .btn-claro { background: var(--tinta); color: #fff; }
+  .btn-borde { background: transparent; color: var(--tinta); border: 1px solid #ccc; }
+  .btn-wa { background: #1ebe5d; color: #fff; }
+  button:disabled { opacity: 0.4; }
+  .hidden { display: none !important; }
+  .order-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--rojo);
+    margin-bottom: 4px;
+  }
+  .dato { font-size: 0.9rem; margin-bottom: 4px; color: #444; }
+  .dato b { color: var(--tinta); }
+  .estado {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #efefef;
+    color: #444;
+    margin: 6px 0 10px;
+  }
+  .estado.listo { background: #fff3c4; color: #8a6d00; }
+  .estado.camino { background: #eef4ff; color: #3a5ba0; }
+  .estado.ok { background: #e7f6ee; color: var(--verde); }
+  .hecho { opacity: 0.45; }
+  .hecho button { cursor: default; }
+  .msg { padding: 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 12px; }
+  .msg-ok { background: #e7f6ee; color: var(--verde); }
+  .msg-err { background: #fdecea; color: #c0392b; }
+  .divisor { border-top: 1px solid var(--borde); margin: 12px 0; }
+  .mini { font-size: 0.75rem; color: #999; text-align: center; margin-top: 6px; }
+  .correos { display: flex; gap: 6px; margin-bottom: 12px; }
+  .btn-correo {
+    flex: 1; padding: 9px 6px; margin: 0; font-size: 0.85rem; font-weight: 600;
+    background: #fff; color: var(--tinta); border: 1px solid #ccc; border-radius: 999px;
+  }
+  .btn-correo.activo { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+  #lector { border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+  #lector video { width: 100% !important; border-radius: 8px; }
+  .envio-info { background: #e7f6ee; color: #1e8a5a; border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<img src="/logo_lockup.png" alt="SCATTO" style="display:block;margin:22px auto 12px;height:56px;">
+<div class="sub">Escaner de pedidos</div>
+
+<!-- PASO 0: clave -->
+<div id="paso-clave" class="card">
+  <label>Clave de acceso</label>
+  <input type="password" id="clave" placeholder="Ingresa tu clave" autocomplete="off">
+  <button class="btn-rojo" onclick="guardarClave()">Entrar</button>
+</div>
+
+<!-- PASO 1: escanear o buscar -->
+<div id="paso-scan" class="hidden">
+  <div class="card">
+    <label>Busca por numero de orden</label>
+    <input type="tel" id="busqueda-manual" placeholder="Ej: 128" autocomplete="off">
+    <button class="btn-rojo" onclick="buscarManual()">Buscar</button>
+  </div>
+</div>
+
+<!-- PASO 2: orden encontrada -->
+<div id="paso-orden" class="hidden">
+  <div class="card">
+    <div class="order-num" id="o-numero"></div>
+    <span class="estado" id="o-estado"></span>
+    <div class="dato"><b id="o-cliente"></b></div>
+    <div class="dato" id="o-productos"></div>
+    <div class="dato" id="o-direccion"></div>
+    <div class="dato" id="o-pago"></div>
+  </div>
+
+  <div id="bloque-empaquetado">
+    <button class="btn-rojo" onclick="accion('empaquetado')">Marcar EMPAQUETADO</button>
+  </div>
+
+  <div class="card" id="bloque-enviado">
+    <div id="envio-info" class="envio-info hidden"></div>
+    <label>Correo (para armar el link de seguimiento)</label>
+    <div class="correos">
+      <button type="button" class="btn-correo activo" data-correo="ca" onclick="elegirCorreo(this)">Correo Argentino</button>
+      <button type="button" class="btn-correo" data-correo="andreani" onclick="elegirCorreo(this)">Andreani</button>
+      <button type="button" class="btn-correo" data-correo="otro" onclick="elegirCorreo(this)">Otro</button>
+    </div>
+    <label>Tracking (opcional, para envios por correo)</label>
+    <button type="button" class="btn-borde" id="btn-escanear" onclick="escanearEtiqueta()">📷 Escanear etiqueta del correo</button>
+    <div id="lector" class="hidden"></div>
+    <input type="text" id="tracking-code" placeholder="Codigo de seguimiento" autocomplete="off" oninput="armarLink()">
+    <input type="text" id="tracking-url" placeholder="Link de seguimiento (se completa solo)" autocomplete="off">
+    <button class="btn-claro" onclick="accion('enviado')">Marcar ENVIADO</button>
+  </div>
+
+  <div class="card" id="bloque-entregado">
+    <label>Datos de quien recibe (para entregas propias)</label>
+    <input type="text" id="recibe-nombre" placeholder="Nombre y apellido" autocomplete="off">
+    <input type="tel" id="recibe-dni" placeholder="DNI" autocomplete="off">
+    <button class="btn-claro" onclick="accion('entregado')">Marcar ENTREGADO</button>
+  </div>
+
+  <button class="btn-borde" onclick="volver()">Buscar otro pedido</button>
+</div>
+
+<!-- Resultado -->
+<div id="resultado" class="hidden">
+  <div id="res-msg" class="msg"></div>
+  <a id="res-wa" class="hidden" target="_blank"><button class="btn-wa">Enviar WhatsApp al cliente</button></a>
+  <button class="btn-borde" onclick="volverAlPedido()">Volver al pedido</button>
+  <button class="btn-borde" onclick="volver()">Buscar otro pedido</button>
+</div>
+
+<div class="mini">SCATTO · uso interno</div>
+
+<script>
+const FN_URL = "/.netlify/functions/scan";
+let ordenActual = null;
+let procesando = false;
+
+// ---- clave ----
+function guardarClave() {
+  const c = document.getElementById("clave").value.trim();
+  if (!c) return;
+  localStorage.setItem("scatto_scan_key", c);
+  document.getElementById("paso-clave").classList.add("hidden");
+  document.getElementById("paso-scan").classList.remove("hidden");
+  autocargar();
+}
+function claveGuardada() { return localStorage.getItem("scatto_scan_key") || ""; }
+
+// ---- API ----
+async function llamar(payload) {
+  const res = await fetch(FN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Scan-Key": claveGuardada() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({ error: "Respuesta invalida del servidor" }));
+  if (res.status === 401) {
+    localStorage.removeItem("scatto_scan_key");
+    location.reload();
+    return null;
+  }
+  if (!res.ok) throw new Error(data.error || ("Error " + res.status));
+  return data;
+}
+
+// ---- correo y link de seguimiento ----
+let correoElegido = "ca";
+const LINKS_CORREO = {
+  ca: (c) => "https://www.correoargentino.com.ar/formularios/e-commerce?id=" + c,
+  andreani: (c) => "https://www.andreani.com/envio/" + c,
+  otro: null,
+};
+
+function elegirCorreo(btn) {
+  correoElegido = btn.dataset.correo;
+  document.querySelectorAll(".btn-correo").forEach(b => b.classList.toggle("activo", b === btn));
+  armarLink();
+}
+
+function armarLink() {
+  const code = document.getElementById("tracking-code").value.trim().replace(/\s+/g, "");
+  const url = document.getElementById("tracking-url");
+  const arma = LINKS_CORREO[correoElegido];
+  if (!code || !arma) { if (!code) url.value = ""; return; }
+  url.value = arma(code);
+}
+
+// ---- lector de etiquetas (código de barras o QR del correo) ----
+let lector = null;
+
+// Saca el número de seguimiento de lo que lea la cámara
+// (puede venir pelado, dentro de una URL, o con texto alrededor)
+function extraerTracking(texto) {
+  const t = String(texto).trim();
+  const enUrl = t.match(/[?&](id|tracking|numero|envio)=([A-Za-z0-9]+)/i);
+  if (enUrl) return enUrl[2];
+  const alfanum = t.match(/\b[A-Z0-9]{10,25}\b/);
+  if (alfanum) return alfanum[0];
+  return t.replace(/\s+/g, "");
+}
+
+async function escanearEtiqueta() {
+  const caja = document.getElementById("lector");
+  const btn = document.getElementById("btn-escanear");
+  if (lector) { await cerrarLector(); return; }
+  caja.classList.remove("hidden");
+  btn.textContent = "✕ Cerrar cámara";
+  lector = new Html5Qrcode("lector", {
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39,
+      Html5QrcodeSupportedFormats.QR_CODE,
+      Html5QrcodeSupportedFormats.DATA_MATRIX,
+    ],
+  });
+  try {
+    await lector.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 280, height: 140 } },
+      async (texto) => {
+        document.getElementById("tracking-code").value = extraerTracking(texto);
+        armarLink();
+        if (navigator.vibrate) navigator.vibrate(80);
+        await cerrarLector();
+      }
+    );
+  } catch (e) {
+    await cerrarLector();
+    alert("No pude abrir la cámara: " + (e && e.message ? e.message : e));
+  }
+}
+
+async function cerrarLector() {
+  try { if (lector) await lector.stop(); } catch (_) {}
+  try { if (lector) lector.clear(); } catch (_) {}
+  lector = null;
+  document.getElementById("lector").classList.add("hidden");
+  document.getElementById("btn-escanear").textContent = "📷 Escanear etiqueta del correo";
+}
+
+function buscarManual() {
+  const v = document.getElementById("busqueda-manual").value.trim();
+  if (v) buscarOrden(v);
+}
+
+async function buscarOrden(id) {
+  ocultarTodo();
+  mostrarCargando("Buscando pedido...");
+  try {
+    const data = await llamar({ orderId: id, action: "info" });
+    if (!data) return;
+    ordenActual = data.order;
+    pintarOrden(data.order);
+  } catch (e) {
+    mostrarError(e.message);
+  }
+}
+
+function pintarOrden(o) {
+  ocultarTodo();
+  document.getElementById("o-numero").textContent = "#" + o.number;
+  document.getElementById("o-cliente").textContent = o.customer_name + (o.phone ? " · " + o.phone : "");
+  document.getElementById("o-productos").textContent = o.products.join(" | ");
+  document.getElementById("o-direccion").textContent = o.address;
+  document.getElementById("o-pago").textContent = "Pago: " + o.payment_status;
+  const est = o.fulfillment ? o.fulfillment.status : o.shipping_status;
+  const estLabel = (o.fulfillment && o.fulfillment.status_label) || o.shipping_status_label || est;
+  const estEl = document.getElementById("o-estado");
+  estEl.textContent = estLabel;
+
+  // Qué pasos ya están hechos según el estado actual
+  const s = String(est || "").toUpperCase();
+  const empaquetadoHecho = ["PACKED", "DISPATCHED", "READY_FOR_PICKUP", "DELIVERED", "SHIPPED"].includes(s);
+  const enviadoHecho = ["DISPATCHED", "READY_FOR_PICKUP", "DELIVERED", "SHIPPED"].includes(s);
+  const entregadoHecho = ["DELIVERED"].includes(s);
+
+  estEl.className = "estado" + (entregadoHecho ? " ok" : enviadoHecho ? " camino" : empaquetadoHecho ? " listo" : "");
+
+  marcarPaso("bloque-empaquetado", empaquetadoHecho, "Marcar EMPAQUETADO", "✓ Empaquetado");
+  marcarPaso("bloque-enviado", enviadoHecho, "Marcar ENVIADO", "✓ Enviado");
+  marcarPaso("bloque-entregado", entregadoHecho, "Marcar ENTREGADO", "✓ Entregado");
+
+  // Si Tiendanube ya tiene el tracking (Envío Nube), lo precargamos
+  const info = document.getElementById("envio-info");
+  const codeEl = document.getElementById("tracking-code");
+  const urlEl = document.getElementById("tracking-url");
+  const env = o.envio || {};
+  if (env.tracking) {
+    codeEl.value = env.tracking;
+    urlEl.value = env.url || "";
+    const t = String(env.transportista || "").toLowerCase();
+    const pill = t.includes("andreani") ? "andreani" : t.includes("correo") ? "ca" : "otro";
+    const b = document.querySelector('.btn-correo[data-correo="' + pill + '"]');
+    if (b) { correoElegido = pill; document.querySelectorAll(".btn-correo").forEach(x => x.classList.toggle("activo", x === b)); }
+    if (!urlEl.value) armarLink();
+    info.textContent = "✓ Tracking cargado desde Tiendanube" +
+      (env.transportista ? " · " + env.transportista : "") + (env.opcion ? " · " + env.opcion : "");
+    info.classList.remove("hidden");
+  } else {
+    info.classList.add("hidden");
+  }
+
+  document.getElementById("paso-orden").classList.remove("hidden");
+}
+
+// Deshabilita el bloque de un paso ya realizado (y lo vuelve a habilitar si no)
+function marcarPaso(idBloque, hecho, textoNormal, textoHecho) {
+  const bloque = document.getElementById(idBloque);
+  if (!bloque) return;
+  const btn = bloque.querySelector("button.btn-rojo, button.btn-claro");
+  bloque.classList.toggle("hecho", hecho);
+  bloque.querySelectorAll("input, button").forEach(el => { el.disabled = hecho; });
+  if (btn) btn.textContent = hecho ? textoHecho : textoNormal;
+}
+
+async function accion(tipo) {
+  if (procesando || !ordenActual) return;
+  const bloque = document.getElementById("bloque-" + tipo);
+  if (bloque && bloque.classList.contains("hecho")) return;
+  procesando = true;
+  const payload = { orderId: ordenActual.id, action: tipo };
+  if (tipo === "enviado") {
+    payload.tracking_code = document.getElementById("tracking-code").value.trim();
+    payload.tracking_url = document.getElementById("tracking-url").value.trim();
+  }
+  if (tipo === "entregado") {
+    payload.recibe = document.getElementById("recibe-nombre").value.trim();
+    payload.dni = document.getElementById("recibe-dni").value.trim();
+  }
+  ocultarTodo();
+  mostrarCargando("Actualizando pedido...");
+  try {
+    const data = await llamar(payload);
+    if (!data) return;
+    ocultarTodo();
+    const r = document.getElementById("resultado");
+    const m = document.getElementById("res-msg");
+    m.className = "msg msg-ok";
+    m.textContent = "Pedido #" + ordenActual.number + " actualizado a " + data.new_status +
+      (data.note ? " (nota " + data.note + ")" : "");
+    const wa = document.getElementById("res-wa");
+    if (data.wa_link) { wa.href = data.wa_link; wa.classList.remove("hidden"); }
+    else { wa.classList.add("hidden"); }
+    r.classList.remove("hidden");
+  } catch (e) {
+    mostrarError(e.message);
+  } finally {
+    procesando = false;
+  }
+}
+
+// ---- helpers UI ----
+function ocultarTodo() {
+  ["paso-scan", "paso-orden", "resultado"].forEach(id =>
+    document.getElementById(id).classList.add("hidden"));
+  const c = document.getElementById("cargando");
+  if (c) c.remove();
+  const a = document.getElementById("aviso");
+  if (a) a.remove();
+}
+function mostrarCargando(texto) {
+  const div = document.createElement("div");
+  div.id = "cargando";
+  div.className = "msg";
+  div.style.background = "#f2f2f2";
+  div.style.color = "#444";
+  div.textContent = texto;
+  document.body.insertBefore(div, document.getElementById("resultado"));
+}
+function mostrarError(texto) {
+  ocultarTodo();
+  const r = document.getElementById("resultado");
+  const m = document.getElementById("res-msg");
+  m.className = "msg msg-err";
+  m.textContent = texto;
+  document.getElementById("res-wa").classList.add("hidden");
+  r.classList.remove("hidden");
+}
+function volverAlPedido() {
+  if (ordenActual) buscarOrden(ordenActual.id);
+  else volver();
+}
+
+function volver() {
+  cerrarLector();
+  ocultarTodo();
+  ordenActual = null;
+  ["tracking-code","tracking-url","recibe-nombre","recibe-dni","busqueda-manual"].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = "";
+  });
+  document.getElementById("paso-scan").classList.remove("hidden");
+}
+
+// Extrae el id de orden de un QR (numero pelado o URL con ?o=)
+function extraerId(texto) {
+  const m = String(texto).match(/[?&]o=(\d+)/);
+  return m ? m[1] : String(texto).trim();
+}
+
+function autocargar() {
+  const params = new URLSearchParams(location.search);
+  const o = params.get("o");
+  if (!o) return false;
+  if (claveGuardada()) {
+    buscarOrden(o);
+    return true;
+  }
+  return false;
+}
+
+// Enter para confirmar
+document.getElementById("clave").addEventListener("keydown", e => {
+  if (e.key === "Enter") guardarClave();
+});
+document.getElementById("busqueda-manual").addEventListener("keydown", e => {
+  if (e.key === "Enter") buscarManual();
+});
+
+// init
+if (claveGuardada()) {
+  document.getElementById("paso-clave").classList.add("hidden");
+  document.getElementById("paso-scan").classList.remove("hidden");
+  autocargar();
+}
+</script>
+</body>
+</html>

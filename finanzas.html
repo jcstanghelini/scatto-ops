@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCATTO · Finanzas</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="manifest" href="/manifest-finanzas.json">
+<meta name="theme-color" content="#ffffff">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#ffffff; color:#111;
+    font-family:'Segoe UI',system-ui,sans-serif;
+    min-height:100vh; padding:32px 16px 60px;
+  }
+  .wrap { max-width:900px; margin:0 auto; }
+
+  .marca { text-align:center; }
+  .logo { height:64px; width:auto; }
+  h1 {
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:34px; font-weight:700; text-align:center; margin-top:14px; line-height:1.15;
+  }
+  h1 em { font-style:italic; color:#e02b2b; }
+  .sub { text-align:center; color:#777; font-size:14px; margin:6px 0 28px; }
+
+  .login { max-width:340px; margin:60px auto; border:1px solid #e4e4e4; border-radius:12px; padding:24px; }
+  .login input { width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; background:#fff; color:#111; font-size:15px; margin-bottom:12px; }
+  .login button { width:100%; padding:13px; border:none; border-radius:8px; background:#e02b2b; color:#fff; font-size:15px; font-weight:600; cursor:pointer; }
+
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; align-items:center; }
+  .toolbar button {
+    flex:0 0 auto; padding:9px 16px; border:1px solid #d9d9d9; border-radius:999px;
+    background:#fff; color:#111; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .toolbar button.activo { background:#e02b2b; border-color:#e02b2b; color:#fff; }
+  .toolbar .csv { margin-left:auto; background:#111; border-color:#111; color:#fff; }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:18px; }
+  .card { border:1px solid #e4e4e4; border-radius:12px; padding:16px; }
+  .card .lbl { font-size:12px; color:#777; }
+  .card .val { font-size:22px; font-weight:800; margin-top:4px; }
+  .card .extra { font-size:11px; color:#999; margin-top:4px; }
+
+  .potes { border:1px solid #e4e4e4; border-radius:12px; padding:18px; margin-bottom:18px; }
+  .potes h2 { font-family:Georgia,serif; font-size:18px; font-weight:700; margin-bottom:10px; }
+  .pote { display:flex; justify-content:space-between; gap:10px; padding:11px 0; border-bottom:1px solid #efefef; font-size:15px; }
+  .pote:last-child { border-bottom:none; }
+  .pote .monto { font-weight:800; white-space:nowrap; }
+  .barra { height:7px; background:#efefef; border-radius:4px; margin-top:4px; overflow:hidden; }
+  .barra div { height:100%; background:#e02b2b; }
+
+  table { width:100%; border-collapse:collapse; font-size:13.5px; border:1px solid #e4e4e4; border-radius:12px; overflow:hidden; }
+  th { text-align:left; padding:11px 9px; font-size:12px; color:#777; font-weight:600; border-bottom:1px solid #e4e4e4; background:#fafafa; }
+  td { padding:10px 9px; border-bottom:1px solid #f0f0f0; }
+  tr:last-child td { border-bottom:none; }
+  .comprador { max-width:150px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-weight:600; }
+  .producto { color:#666; font-size:12.5px; }
+  .pos { color:#1e8a5a; font-weight:700; }
+  .neg { color:#e02b2b; font-weight:700; }
+  .gris { color:#999; }
+  tr.fila { cursor:pointer; }
+  tr.env-pendiente td { background:#fff8e6; }
+  tr.env-enviado td { background:#eef4ff; }
+  tr.env-entregado td { background:#f0faf4; }
+  tr.env-problema td { background:#fdecea; }
+  .chip.env-pendiente { background:#ffe8b3; color:#8a5a00; }
+  .chip.env-enviado { background:#d6e4ff; color:#2a4a8a; }
+  .chip.env-entregado { background:#cdeedb; color:#1e6b45; }
+  .chip.env-problema { background:#f8c9c4; color:#9b2c22; }
+  tr.fila:hover td { filter:brightness(0.97); }
+  tr.detalle td { background:#fafafa; padding:14px 16px; border-bottom:2px solid #e4e4e4; }
+  .det-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px 18px; font-size:13px; }
+  .det-lbl { display:block; font-size:11px; color:#999; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+  .editable { cursor:pointer; border-bottom:1px dashed #bbb; }
+  .editable:hover { color:#e02b2b; border-bottom-color:#e02b2b; }
+  .chip { font-size:11px; padding:2px 9px; border-radius:999px; background:#f0f0f0; color:#444; font-weight:600; white-space:nowrap; }
+  .chip.ml { background:#fff3c4; color:#8a6d00; }
+  .chip.via { background:#eef4ff; color:#3a5ba0; margin-left:4px; font-size:10px; padding:2px 7px; }
+  .pend { color:#999; font-size:12px; }
+  .vacio { text-align:center; color:#888; padding:36px 0; border:1px dashed #ddd; border-radius:12px; }
+  .nota { color:#999; font-size:12px; text-align:center; margin-top:18px; line-height:1.6; }
+  .error { text-align:center; color:#e02b2b; margin-top:30px; }
+  .cargando { text-align:center; color:#888; margin-top:40px; }
+  .solo-cel { display:none; }
+  @media (max-width:600px){
+    .ocultar-cel { display:none; }
+    .solo-cel { display:block; margin-top:3px; }
+    h1 { font-size:27px; }
+    .logo { height:48px; }
+    .toolbar .csv { margin-left:0; width:100%; text-align:center; }
+    table { font-size:13px; }
+    th, td { padding:9px 6px; }
+    .comprador { max-width:130px; white-space:normal; line-height:1.2; }
+    .det-grid { grid-template-columns:1fr 1fr; gap:8px 12px; font-size:12.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="marca"><img src="logo_lockup.png" alt="SCATTO" class="logo"></div>
+  <h1>Tu plata, exactamente<br>donde <em>la necesitás.</em></h1>
+  <div class="sub">Panel financiero</div>
+
+  <div id="login" class="login" style="display:none">
+    <input type="password" id="clave" placeholder="Clave de acceso">
+    <button onclick="guardarClave()">Entrar</button>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="toolbar" id="meses"></div>
+    <div id="contenido" class="cargando">Cargando…</div>
+    <div class="nota">
+      Tienda: todas las órdenes de Tiendanube (MP, Pago Nube y manuales). ML: ventas cobradas por MP.<br>
+      Las ventas por Pago Nube/manuales muestran neto “—” porque su liquidación no pasa por MP.<br>
+      El CSV incluye documento y email para facturación.
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "/.netlify/functions/finanzas";
+const NOMBRES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+let mesSeleccionado = null;
+
+function fmt(n){ return "$" + Math.round(n).toLocaleString("es-AR"); }
+function fechaLinda(f){ const p = f.split("-"); return p[2] + "/" + p[1]; }
+
+function claveGuardada(){ return localStorage.getItem("scatto_fin_key") || ""; }
+function guardarClave(){
+  localStorage.setItem("scatto_fin_key", document.getElementById("clave").value.trim());
+  iniciar();
+}
+
+function armarMeses(){
+  const cont = document.getElementById("meses");
+  cont.innerHTML = "";
+  const hoy = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    const mes = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    const btn = document.createElement("button");
+    btn.textContent = NOMBRES[d.getMonth()] + (d.getFullYear() !== hoy.getFullYear() ? " " + String(d.getFullYear()).slice(2) : "");
+    btn.dataset.mes = mes;
+    btn.onclick = () => elegirMes(mes);
+    cont.appendChild(btn);
+  }
+  const csv = document.createElement("button");
+  csv.textContent = "⬇ CSV";
+  csv.className = "csv";
+  csv.title = "Descargar el mes en CSV (con documento y email del comprador)";
+  csv.onclick = descargarCSV;
+  cont.appendChild(csv);
+}
+
+function elegirMes(mes){
+  mesSeleccionado = mes;
+  document.querySelectorAll("#meses button").forEach(b => {
+    if (b.dataset.mes) b.classList.toggle("activo", b.dataset.mes === mes);
+  });
+  cargar();
+}
+
+function descargarCSV(){
+  window.location.href = API + "?key=" + encodeURIComponent(claveGuardada()) +
+    "&mes=" + mesSeleccionado + "&formato=csv";
+}
+
+async function cargar(){
+  const cont = document.getElementById("contenido");
+  cont.className = "cargando";
+  cont.textContent = "Cargando…";
+  try {
+    const res = await fetch(API + "?key=" + encodeURIComponent(claveGuardada()) + "&mes=" + mesSeleccionado);
+    if (res.status === 401) {
+      localStorage.removeItem("scatto_fin_key");
+      mostrarLogin();
+      return;
+    }
+    if (!res.ok) throw new Error("Error " + res.status);
+    const data = await res.json();
+    render(data);
+  } catch (e) {
+    cont.className = "error";
+    cont.textContent = "No se pudo cargar: " + e.message;
+  }
+}
+
+function render({ resumen, ventas }){
+  const r = resumen;
+  const cont = document.getElementById("contenido");
+
+  if (ventas.length === 0) {
+    cont.className = "";
+    cont.innerHTML = '<div class="vacio">Sin ventas en este mes.</div>';
+    return;
+  }
+
+  const pctFijos = r.potes.fijos_objetivo > 0
+    ? Math.min(100, Math.round(100 * r.potes.operacion / r.potes.fijos_objetivo))
+    : 0;
+
+  const notaSinNeto = r.sin_neto > 0
+    ? `<div class="extra">+ ${r.sin_neto} venta${r.sin_neto > 1 ? "s" : ""} por Pago Nube/manual (${fmt(r.bruto_sin_neto)} brutos) fuera de MP</div>`
+    : "";
+
+  let html = `
+  <div class="cards">
+    <div class="card"><div class="lbl">Ventas</div><div class="val">${r.ventas} <span style="font-size:13px;color:#999">(${r.unidades} u.)</span></div></div>
+    <div class="card"><div class="lbl">Neto cobrado (MP)</div><div class="val">${fmt(r.neto)}</div>${notaSinNeto}</div>
+    <div class="card"><div class="lbl">Margen (MP)</div><div class="val ${r.margen >= 0 ? "pos" : "neg"}">${fmt(r.margen)}</div></div>
+  </div>
+
+  <div class="potes">
+    <h2>Potes del mes</h2>
+    <div class="pote"><span>🏭 Reposición (${r.unidades} u. × ${fmt(r.parametros.reserva_unitaria)})</span><span class="monto">${fmt(r.potes.reposicion)}</span></div>
+    <div class="pote">
+      <span>⚙️ Operación — fijos cubiertos ${pctFijos}%</span>
+      <span class="monto">${fmt(r.potes.operacion)} / ${fmt(r.potes.fijos_objetivo)}</span>
+    </div>
+    <div class="barra"><div style="width:${pctFijos}%"></div></div>
+    <div class="pote"><span>📈 Crecimiento (margen real libre)</span><span class="monto ${r.potes.crecimiento > 0 ? "pos" : ""}">${fmt(r.potes.crecimiento)}</span></div>
+  </div>
+
+  <table>
+    <thead><tr>
+      <th>Fecha</th><th class="ocultar-cel">Canal</th><th>Comprador</th><th class="ocultar-cel">Producto</th><th class="ocultar-cel">U.</th><th>Neto</th><th>Margen</th><th class="ocultar-cel">Libera</th><th class="ocultar-cel">Envío</th>
+    </tr></thead>
+    <tbody>`;
+
+  for (const v of ventas) {
+    const viaChip = (v.canal === "Tienda" && v.via && v.via !== "MP")
+      ? `<span class="chip via">${v.via}</span>` : "";
+    const netoTxt = v.neto == null
+      ? `<span class="gris">${fmt(v.bruto)} <span style="font-size:10px">bruto</span></span>`
+      : v.neto_estimado
+        ? `<span class="editable" onclick="event.stopPropagation();editarNeto('${v.ref_tn}', ${v.neto})" title="Neto estimado — tocá para cargar el exacto">${fmt(v.neto)} <span style="font-size:10px">est. ✎</span></span>`
+        : (v.ref_tn && v.via !== "MP")
+          ? `<span class="editable" onclick="event.stopPropagation();editarNeto('${v.ref_tn}', ${v.neto})" title="Neto cargado a mano — tocá para corregir">${fmt(v.neto)}</span>`
+          : fmt(v.neto);
+    const margenTxt = v.margen == null
+      ? '<span class="gris">—</span>'
+      : `<span class="${v.margen >= 0 ? "pos" : "neg"}">${fmt(v.margen)}</span>`;
+    const liberaTxt = v.liberado == null
+      ? '<span class="gris">—</span>'
+      : v.liberado ? "✓" : `<span class="pend">${v.libera ? fechaLinda(v.libera) : "—"}</span>`;
+    const rid = "det-" + String(v.id).replace(/\W/g, "");
+    const envChip = v.envio_label ? `<span class="chip env-${v.envio_estado}">${v.envio_label}</span>` : '<span class="gris">—</span>';
+    html += `<tr class="fila env-${v.envio_estado || "na"}" onclick="toggleDetalle('${rid}')">
+      <td>${fechaLinda(v.fecha)}</td>
+      <td class="ocultar-cel"><span class="chip ${v.canal === "ML" ? "ml" : ""}">${v.canal}</span>${viaChip}</td>
+      <td class="comprador" title="${v.comprador || ""}">${v.comprador || '<span class="gris">—</span>'}<span class="solo-cel"><span class="chip ${v.canal === "ML" ? "ml" : ""}">${v.canal}</span>${viaChip}${v.unidades > 1 ? ` <span class="gris" style="font-size:11px">×${v.unidades}</span>` : ""}${v.envio_label ? ` <span class="chip env-${v.envio_estado}">${v.envio_label}</span>` : ""}</span></td>
+      <td class="ocultar-cel producto">${v.desc_corta || v.desc}</td>
+      <td class="ocultar-cel">${v.unidades}</td>
+      <td>${netoTxt}</td>
+      <td>${margenTxt}</td>
+      <td class="ocultar-cel">${liberaTxt}</td>
+      <td class="ocultar-cel">${envChip}</td>
+    </tr>`;
+
+    const descuentos = (v.neto == null) ? null : v.bruto - v.neto;
+    html += `<tr id="${rid}" class="detalle" style="display:none"><td colspan="9">
+      <div class="det-grid">
+        <div><span class="det-lbl">Comprador</span>${v.comprador || "—"}</div>
+        <div><span class="det-lbl">Documento</span>${v.documento || "—"}</div>
+        <div><span class="det-lbl">Email</span>${v.email || "—"}</div>
+        <div><span class="det-lbl">Domicilio</span>${[v.direccion, v.ciudad, v.provincia].filter(Boolean).join(", ") || "—"}${v.cp ? " (CP " + v.cp + ")" : ""}</div>
+        <div><span class="det-lbl">Cond. IVA</span>${v.cond_iva || "—"}</div>
+        <div><span class="det-lbl">Producto</span>${v.desc}</div>
+        <div><span class="det-lbl">Bruto cobrado</span>${fmt(v.bruto)}</div>
+        <div><span class="det-lbl">Comisiones y cargos</span>${descuentos == null ? "—" : fmt(descuentos)}</div>
+        <div><span class="det-lbl">Envío (va al correo)</span>${fmt(v.envio || 0)}</div>
+        <div><span class="det-lbl">Costo producto</span>${fmt(r.parametros.costo_unitario * v.unidades)} (${v.unidades} u.)</div>
+        <div><span class="det-lbl">Vía de cobro</span>${v.canal} · ${v.via || "MP"}${v.cuotas > 1 ? " · " + v.cuotas + " cuotas" : ""}</div>
+        <div><span class="det-lbl">Envío</span>${v.envio_label || "—"}</div>
+        <div><span class="det-lbl">Liberación</span>${v.liberado == null ? "Fuera de MP" : v.liberado ? "Liberado ✓" : "Pendiente → " + (v.libera ? fechaLinda(v.libera) : "?")}</div>
+        <div><span class="det-lbl">Orden Tiendanube</span>${v.orden_tn || "—"}</div>
+        <div><span class="det-lbl">ID orden/pago</span>${v.id}</div>
+      </div>
+    </td></tr>`;
+  }
+
+  html += "</tbody></table>";
+  cont.className = "";
+  cont.innerHTML = html;
+}
+
+function toggleDetalle(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === "none" ? "table-row" : "none";
+}
+
+async function editarNeto(refTn, actual){
+  const v = prompt("Neto real acreditado por la pasarela (según tu panel de cobros):", actual);
+  if (v === null) return;
+  const limpio = String(v).replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+  try {
+    const res = await fetch(API + "?key=" + encodeURIComponent(claveGuardada()), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orden_id: refTn, neto: parseFloat(limpio) }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || ("Error " + res.status));
+    cargar();
+  } catch (e) {
+    alert("No se pudo guardar: " + e.message);
+  }
+}
+
+function mostrarLogin(){
+  document.getElementById("panel").style.display = "none";
+  document.getElementById("login").style.display = "block";
+}
+
+function iniciar(){
+  if (!claveGuardada()) { mostrarLogin(); return; }
+  document.getElementById("login").style.display = "none";
+  document.getElementById("panel").style.display = "block";
+  armarMeses();
+  const hoy = new Date();
+  elegirMes(hoy.getFullYear() + "-" + String(hoy.getMonth() + 1).padStart(2, "0"));
+}
+
+iniciar();
+</script>
+</body>
+</html>
