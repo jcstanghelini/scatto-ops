@@ -1,0 +1,19 @@
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+
+# Netlify local
+.netlify/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Dependencias (no se usan, pero por las dudas)
+node_modules/
