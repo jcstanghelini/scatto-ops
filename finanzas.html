@@ -68,10 +68,12 @@
   tr.env-enviado td { background:#eef4ff; }
   tr.env-entregado td { background:#f0faf4; }
   tr.env-problema td { background:#fdecea; }
+  tr.env-devuelta td { background:#f7f7f7; color:#8a8a8a; }
   .chip.env-pendiente { background:#ffe8b3; color:#8a5a00; }
   .chip.env-enviado { background:#d6e4ff; color:#2a4a8a; }
   .chip.env-entregado { background:#cdeedb; color:#1e6b45; }
   .chip.env-problema { background:#f8c9c4; color:#9b2c22; }
+  .chip.env-devuelta { background:#f8c9c4; color:#9b2c22; }
   tr.fila:hover td { filter:brightness(0.97); }
   tr.detalle td { background:#fafafa; padding:14px 16px; border-bottom:2px solid #e4e4e4; }
   .det-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px 18px; font-size:13px; }
@@ -208,9 +210,13 @@ function render({ resumen, ventas }){
     ? `<div class="extra">+ ${r.sin_neto} venta${r.sin_neto > 1 ? "s" : ""} por Pago Nube/manual (${fmt(r.bruto_sin_neto)} brutos) fuera de MP</div>`
     : "";
 
+  const notaDevueltas = r.devueltas > 0
+    ? `<div class="extra">+ ${r.devueltas} devuelta${r.devueltas > 1 ? "s" : ""} (no suma${r.devueltas > 1 ? "n" : ""} al mes)</div>`
+    : "";
+
   let html = `
   <div class="cards">
-    <div class="card"><div class="lbl">Ventas</div><div class="val">${r.ventas} <span style="font-size:13px;color:#999">(${r.unidades} u.)</span></div></div>
+    <div class="card"><div class="lbl">Ventas</div><div class="val">${r.ventas} <span style="font-size:13px;color:#999">(${r.unidades} u.)</span></div>${notaDevueltas}</div>
     <div class="card"><div class="lbl">Neto cobrado (MP)</div><div class="val">${fmt(r.neto)}</div>${notaSinNeto}</div>
     <div class="card"><div class="lbl">Margen (MP)</div><div class="val ${r.margen >= 0 ? "pos" : "neg"}">${fmt(r.margen)}</div></div>
   </div>
@@ -235,7 +241,9 @@ function render({ resumen, ventas }){
   for (const v of ventas) {
     const viaChip = (v.canal === "Tienda" && v.via && v.via !== "MP")
       ? `<span class="chip via">${v.via}</span>` : "";
-    const netoTxt = v.neto == null
+    const netoTxt = v.devuelta
+      ? `<span class="gris" style="text-decoration:line-through">${fmt(v.bruto)}</span>`
+      : v.neto == null
       ? `<span class="gris">${fmt(v.bruto)} <span style="font-size:10px">bruto</span></span>`
       : v.neto_estimado
         ? `<span class="editable" onclick="event.stopPropagation();editarNeto('${v.ref_tn}', ${v.neto})" title="Neto estimado — tocá para cargar el exacto">${fmt(v.neto)} <span style="font-size:10px">est. ✎</span></span>`
@@ -277,7 +285,7 @@ function render({ resumen, ventas }){
         <div><span class="det-lbl">Costo producto</span>${fmt(r.parametros.costo_unitario * v.unidades)} (${v.unidades} u.)</div>
         <div><span class="det-lbl">Vía de cobro</span>${v.canal} · ${v.via || "MP"}${v.cuotas > 1 ? " · " + v.cuotas + " cuotas" : ""}</div>
         <div><span class="det-lbl">Envío</span>${v.envio_label || "—"}</div>
-        <div><span class="det-lbl">Liberación</span>${v.liberado == null ? "Fuera de MP" : v.liberado ? "Liberado ✓" : "Pendiente → " + (v.libera ? fechaLinda(v.libera) : "?")}</div>
+        <div><span class="det-lbl">Liberación</span>${v.devuelta ? "Cobro devuelto" : v.liberado == null ? "Fuera de MP" : v.liberado ? "Liberado ✓" : "Pendiente → " + (v.libera ? fechaLinda(v.libera) : "?")}</div>
         <div><span class="det-lbl">Orden Tiendanube</span>${v.orden_tn || "—"}</div>
         <div><span class="det-lbl">ID orden/pago</span>${v.id}</div>
       </div>
