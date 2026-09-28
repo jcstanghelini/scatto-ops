@@ -1,15 +1,17 @@
-// netlify/functions/finanzas.js — v8
+// netlify/functions/finanzas.js — v9
+// Novedad v9: las ventas devueltas (refund/contracargo de MP) ya no desaparecen:
+// se muestran marcadas "Devuelta", con neto y margen fuera de los totales y potes.
 // Novedades: el enriquecimiento (Tiendanube + MercadoLibre) corre siempre,
 // así el panel muestra el comprador en cada venta; y se agrega una
 // descripción corta del producto para la tabla.
 // Usa MP_TOKEN, TN_TOKEN y ALERT_KEY (variables ya cargadas en Netlify).
 
 // ====== NÚMEROS DEL NEGOCIO (editá acá cuando cambien) ======
-const COSTO_UNITARIO = 10000;   // costo por unidad puesta en Argentina (valor de ejemplo)
-const RESERVA_UNITARIA = 10500; // lo que se aparta por unidad vendida, con colchón (valor de ejemplo)
-const FIJOS_MENSUALES = 100000; // plataforma + impuestos + ads + packaging (valor de ejemplo)
+const COSTO_UNITARIO = 13200;   // costo por unidad puesta en Argentina (importación guía 6296)
+const RESERVA_UNITARIA = 13500; // lo que se aparta por unidad vendida, con colchón
+const FIJOS_MENSUALES = 158000; // Tiendanube + monotributo + ads + packaging
 const TN_STORE_ID = "7747275";  // tu tienda en Tiendanube
-const PRECIO_REF_ML = 25000;    // precio aprox. por unidad en ML (valor de ejemplo): se usa para estimar
+const PRECIO_REF_ML = 29000;    // precio aprox. por unidad en ML: se usa para estimar
                                 // cantidades cuando el pago no trae el detalle
                                 // (actualizalo si cambiás mucho el precio de lista)
 // ============================================================
@@ -415,6 +417,12 @@ function netoDe(p) {
   return neto;
 }
 
+function pagoDevuelto(p) {
+  if (p.status === "refunded" || p.status === "charged_back") return true;
+  const monto = p.transaction_amount || 0;
+  return monto > 0 && (p.transaction_amount_refunded || 0) >= monto;
+}
+
 function unidadesDe(p) {
   const items = (p.additional_info && p.additional_info.items) || [];
   const total = items.reduce((acc, it) => acc + (parseInt(it.quantity, 10) || 0), 0);
@@ -449,7 +457,7 @@ function claveVenta(p) {
 function ventasDesdeMP(pagos, myId) {
   const cobrados = pagos.filter(
     (p) =>
-      p.status === "approved" &&
+      (p.status === "approved" || p.status === "refunded" || p.status === "charged_back") &&
       String(collectorDe(p)) === String(myId) &&
       p.operation_type !== "account_fund" &&
       p.operation_type !== "money_transfer" &&
@@ -465,8 +473,9 @@ function ventasDesdeMP(pagos, myId) {
       grupos[k] = {
         id: (p.order && p.order.id) || p.id,
         es_ml: esML(p),
+        devuelta: true,
         ref_tn: null,
-        fecha: fechaART(new Date(p.date_approved)),
+        fecha: fechaART(new Date(p.date_approved || p.date_created)),
         canal: esML(p) ? "ML" : "Tienda",
         via: "MP",
         desc: (p.description || "Venta").slice(0, 60),
@@ -483,10 +492,11 @@ function ventasDesdeMP(pagos, myId) {
       };
     }
     const g = grupos[k];
+    g.devuelta = g.devuelta && pagoDevuelto(p);
     g.bruto += Math.round(p.transaction_amount || 0);
     g.neto += Math.round(netoDe(p));
     g.unidades = Math.max(g.unidades, unidadesDe(p));
-    const f = fechaART(new Date(p.date_approved));
+    const f = fechaART(new Date(p.date_approved || p.date_created));
     if (f < g.fecha) g.fecha = f;
     if (p.money_release_status !== "released") g.liberado = false;
     if (p.money_release_date) {
@@ -608,7 +618,7 @@ function armarCSV(ventas) {
   const filas = [
     ["Fecha", "Canal", "Via", "Detalle", "Unidades", "Bruto", "Neto", "Envio", "Margen",
      "Comprador", "Documento", "Cond IVA", "Direccion", "Ciudad", "Provincia", "CP", "Email",
-     "Orden TN", "Envio", "Liberado", "Fecha liberacion", "ID orden/pago"],
+     "Orden TN", "Envio", "Liberado", "Fecha liberacion", "ID orden/pago", "Estado"],
     ...ventas.map((v) => [
       v.fecha, v.canal, v.via, v.desc, v.unidades, v.bruto,
       v.neto == null ? "" : v.neto,
@@ -618,6 +628,7 @@ function armarCSV(ventas) {
       v.orden_tn, v.envio_label || "",
       v.liberado == null ? "" : v.liberado ? "SI" : "NO",
       v.libera || "", v.id,
+      v.devuelta ? "DEVUELTA" : "",
     ]),
   ];
   const cuerpo = filas.map((f) => f.map(esc).join(";")).join("\r\n");
@@ -699,7 +710,7 @@ exports.handler = async (event) => {
           const est = Math.max(1, Math.round(v.bruto / PRECIO_REF_ML));
           if (est > v.unidades) v.unidades = est;
         }
-        return {
+        const out = {
           ...v,
           comprador: formatearNombre(v.comprador),
           direccion: formatearNombre(v.direccion),
@@ -712,6 +723,15 @@ exports.handler = async (event) => {
             ? null
             : v.neto - (v.envio || 0) - COSTO_UNITARIO * v.unidades,
         };
+        // Venta devuelta: queda visible pero fuera de la economía del mes
+        if (v.devuelta) {
+          out.margen = null;
+          out.liberado = null;
+          out.libera = null;
+          out.envio_estado = "devuelta";
+          out.envio_label = "Devuelta";
+        }
+        return out;
       })
       .sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
 
@@ -802,10 +822,11 @@ exports.handler = async (event) => {
     }
 
     const sum = (arr, f) => arr.reduce((a, v) => a + f(v), 0);
-    const conNeto = ventas.filter((v) => v.neto != null);
-    const sinNeto = ventas.filter((v) => v.neto == null);
+    const activas = ventas.filter((v) => !v.devuelta);
+    const conNeto = activas.filter((v) => v.neto != null);
+    const sinNeto = activas.filter((v) => v.neto == null);
 
-    const unidadesMes = sum(ventas, (v) => v.unidades);
+    const unidadesMes = sum(activas, (v) => v.unidades);
     const netoMes = sum(conNeto, (v) => v.neto);
     const reposicionMes = unidadesMes * RESERVA_UNITARIA;
     const disponibleTrasReposicion = Math.max(0, netoMes - reposicionMes);
@@ -814,9 +835,10 @@ exports.handler = async (event) => {
 
     const resumen = {
       mes,
-      ventas: ventas.length,
+      ventas: activas.length,
+      devueltas: ventas.length - activas.length,
       unidades: unidadesMes,
-      bruto: sum(ventas, (v) => v.bruto),
+      bruto: sum(activas, (v) => v.bruto),
       neto: netoMes,
       margen: sum(conNeto, (v) => v.margen),
       sin_neto: sinNeto.length,
