@@ -7,11 +7,11 @@
 // Usa MP_TOKEN, TN_TOKEN y ALERT_KEY (variables ya cargadas en Netlify).
 
 // ====== NÚMEROS DEL NEGOCIO (editá acá cuando cambien) ======
-const COSTO_UNITARIO = 13200;   // costo por unidad puesta en Argentina (importación guía 6296)
-const RESERVA_UNITARIA = 13500; // lo que se aparta por unidad vendida, con colchón
-const FIJOS_MENSUALES = 158000; // Tiendanube + monotributo + ads + packaging
+const COSTO_UNITARIO = 10000;   // costo por unidad puesta en Argentina (valor de ejemplo)
+const RESERVA_UNITARIA = 10500; // lo que se aparta por unidad vendida, con colchón (valor de ejemplo)
+const FIJOS_MENSUALES = 100000; // plataforma + impuestos + ads + packaging (valor de ejemplo)
 const TN_STORE_ID = "7747275";  // tu tienda en Tiendanube
-const PRECIO_REF_ML = 29000;    // precio aprox. por unidad en ML: se usa para estimar
+const PRECIO_REF_ML = 25000;    // precio aprox. por unidad en ML (valor de ejemplo): se usa para estimar
                                 // cantidades cuando el pago no trae el detalle
                                 // (actualizalo si cambiás mucho el precio de lista)
 // ============================================================
